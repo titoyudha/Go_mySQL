@@ -1,0 +1,36 @@
+MYSQL basic Querry via cli
+
+Open mysql connection 
+    mysql -u root -p 
+
+Create database
+    CREATE DATABASE "dbname";
+
+Show database
+    SHOW DATABASE;
+
+Use specific database to change
+    USE "dbname";
+
+Create table
+    CREATE TABLE "table name";
+    example : CREATE TABLE movies(
+        title VARCHAR(50) NOT NULL,
+        genre VARCHAR(30) NOT NULL,
+        director VARCHAR(60) NOT NULL,
+        release_year INT NOT NULL,
+        PRIMARY KEY(title)
+        );
+
+Show Created table
+    DESCRIBE "table name";
+
+Insert into table
+    INSERT INTO "table_name" VALUE("...")
+    example : INSERT INTO movies VALUE (
+        "Joker", "psychological thriller", 
+        "Todd Phillips", 2019
+        );
+
+Print Out Table after inserting data
+    SELECT * FROM "table_name";

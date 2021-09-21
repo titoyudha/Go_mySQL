@@ -12,7 +12,7 @@ import (
 )
 
 func TestDBConnection(t *testing.T) {
-	db, err := sql.Open("mysql", "root:12345678@tcp(localhost3306)/GO_MYSQL?parseTime=true")
+	db, err := sql.Open("mysql", "root:@tcp(localhost3306)/GO_MYSQL")
 	if err != nil {
 		panic(err)
 	}
