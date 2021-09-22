@@ -1,4 +1,4 @@
-MYSQL basic Querry via cli
+MYSQL basic Querry via CLI
 
 Open mysql connection 
     mysql -u root -p 
@@ -34,3 +34,13 @@ Insert into table
 
 Print Out Table after inserting data
     SELECT * FROM "table_name";
+
+
+TIPE DATA PADA DATABASE MYSQL VS GOLANG
+    VARCHAR, CHAR(mysql) = string(golang)
+    INT(mysql) = int32(golang)
+    BIGINT(mysql) = int64(golang)
+    FLOAT(mysql) = float32(golang)
+    DOUBLE(mysql) = float64(golang)
+    BOOLEAN(mysql) = bool(golang)
+    DATE, DATETIME, TIMESTAMP, TIME(mysql) = time.TIME(golang)
