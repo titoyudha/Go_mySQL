@@ -25,7 +25,7 @@ func TestDBConnection(t *testing.T) {
 */
 
 func GetConnection() *sql.DB {
-	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/golang_mysql")
+	db, err := sql.Open("mysql", "root:@tcp(localhost:3306)/golang_mysql?parseTime=true")
 	if err != nil {
 		panic(err)
 	}
@@ -101,4 +101,71 @@ func TestExecSql2(t *testing.T) {
 	}
 
 	fmt.Println("Done insert into customer")
+}
+
+/*
+--------------------------------------Test querry sql complex--------------------------------------
+*/
+
+func TestQuerrySQLComplex(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	ctx := context.Background()
+
+	script := "SELECT id, name, email, balance, rating, birth_date, married, created_at FROM customer"
+	rows, err := db.QueryContext(ctx, script)
+	if err != nil {
+		panic(err)
+	}
+	defer rows.Close()
+	for rows.Next() { //iterasi untuk menampilkan data didalam database
+		var id, name, email string
+		var balance int32
+		var rating float64
+		var birthDate, createdAt time.Time
+		var married bool
+
+		err := rows.Scan(&id, &name, &email, &balance, &rating, &birthDate, &married, &createdAt)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Id", id, "name", name, "email", email, "balance", balance, "rating", rating, "birthdate", birthDate, "createdat", createdAt, "Married", married)
+
+	}
+}
+
+/*
+--------------------------------------SQL INJECTION--------------------------------------
+*/
+
+//Contoh Source Code yg rentan seranganan SQL Injection
+//karena dengan  merubah script pada username akan membuat password tidak valid
+func TestSQLInjection(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	ctx := context.Background()
+
+	username := "admin" //jika merubah username menjadi "admin'; #" maka akan menyebabkan querry setelah simbol # akan diabaikan
+	password := "admin"
+
+	script := "SELECT username FROM user WHERE username = '" + username + "' AND password = '" + password + "' LIMIT 1"
+	rows, err := db.QueryContext(ctx, script)
+	if err != nil {
+		panic(err)
+
+	}
+
+	defer rows.Close()
+	if rows.Next() {
+		var username string
+		err := rows.Scan(&username)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Succes Login", username)
+	} else {
+		fmt.Println("Login Failed")
+	}
 }
