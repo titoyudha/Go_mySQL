@@ -169,3 +169,84 @@ func TestSQLInjection(t *testing.T) {
 		fmt.Println("Login Failed")
 	}
 }
+
+/*
+--------------------------------------SQL PARAMS--------------------------------------
+*/
+
+func TestSolveSQLInjection(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	ctx := context.Background()
+
+	username := "admin"
+	password := "admin"
+
+	script := "SELECT username FROM user WHERE username = ? AND password = ? LIMIT 1"
+	rows, err := db.QueryContext(ctx, script, username, password) //tambahkan parameter yg akan disubtitusi pada script
+	if err != nil {
+		panic(err)
+
+	}
+
+	defer rows.Close()
+	if rows.Next() {
+		var username string
+		err := rows.Scan(&username)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println("Succes Login", username)
+	} else {
+		fmt.Println("Login Failed")
+	}
+}
+
+/*
+--------------------------------------Exec Context sql with params--------------------------------------
+*/
+
+func TestExecSqlWithParams(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	ctx := context.Background()
+
+	username := "mock2" //Secure from sql injection
+	password := "test"
+
+	script := "INSERT INTO user(username, password) VALUE (?,?)"
+	_, err := db.ExecContext(ctx, script, username, password)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Done insert into user table")
+}
+
+/*
+--------------------------------------Auto Increment--------------------------------------
+*/
+
+func TestAutoIncrement(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	ctx := context.Background()
+
+	email := "mock@gmail.com" //Secure from sql injection
+	comments := "test comment"
+
+	script := "INSERT INTO comments(email, comments) VALUE (?,?)"
+	result, err := db.ExecContext(ctx, script, email, comments)
+	if err != nil {
+		panic(err)
+	}
+	insertId, err := result.LastInsertId()
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Succes insert comments with id", insertId)
+}
