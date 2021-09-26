@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"time"
 
 	"testing"
@@ -249,4 +250,73 @@ func TestAutoIncrement(t *testing.T) {
 	}
 
 	fmt.Println("Succes insert comments with id", insertId)
+}
+
+/*
+<--------------------------------------Prepare Statement-------------------------------------->
+*/
+
+func TestPrepareStatement(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	ctx := context.Background()
+	script := "INSERT INTO comments(email, comments) VALUE (?,?)"
+
+	statement, err := db.PrepareContext(ctx, script)
+	if err != nil {
+		panic(err)
+	}
+	defer statement.Close()
+
+	for i := 0; i < 10; i++ {
+		email := "mock" + strconv.Itoa(i) + "gmail.com" //itoa to convert integer to string
+		comment := "comment" + strconv.Itoa(i)
+
+		result, err := statement.ExecContext(ctx, email, comment)
+		if err != nil {
+			panic(err)
+		}
+		id, err := result.LastInsertId()
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("Comment id ", id)
+	}
+}
+
+/*
+<--------------------------------------Database Transaction-------------------------------------->
+*/
+
+func TestDBTransaction(t *testing.T) {
+	db := GetConnection()
+	defer db.Close()
+
+	ctx := context.Background()
+	transaction, err := db.Begin()
+	if err != nil {
+		panic(err)
+	}
+	script := "INSERT INTO comments(email, comments) VALUE (?,?)"
+	//do transaction
+	for i := 0; i < 10; i++ {
+		email := "mock" + strconv.Itoa(i) + "gmail.com" //itoa to convert integer to string
+		comment := "comment" + strconv.Itoa(i)
+
+		result, err := transaction.ExecContext(ctx, script, email, comment)
+		if err != nil {
+			panic(err)
+		}
+		id, err := result.LastInsertId()
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("Comment id ", id)
+	}
+	err = transaction.Commit() //or u can rollback to cancel transaction
+	if err != nil {
+		panic(err)
+	}
+
 }

@@ -51,7 +51,9 @@ TIPE DATA PADA DATABASE MYSQL VS GOLANG
 SQL PARAMETER
     - Untuk menghindari SQL Injection kita harus menggunakan sql dengan parameter
     - Untuk menandai SQL Querry membutuhkan parameter kita bisa menggunakan karakter ?
-        Contoh Querry : SELECT username FROM username=? AND password=?LIMIT 1
+        Contoh Querry : SELECT username FROM username = ? AND password = ? LIMIT 1
                       : INSERT INTO user(username, password)VALUEs(?,?)
                       : dll
-    
+
+
+PREPARE STATEMENT
